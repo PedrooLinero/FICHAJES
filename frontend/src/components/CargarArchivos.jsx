@@ -7,10 +7,10 @@ function CargarArchivos() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fichero1: null,
-    fichero2: null,
   });
 
   const handleSubmit = async (e) => {
+    console.log(formData);
     e.preventDefault();
 
     // Crear un objeto FormData
@@ -34,6 +34,8 @@ function CargarArchivos() {
     if (formData.fichero1) {
       formDataToSend.append("fichero1", formData.fichero1);
     }
+
+    console.log(formDataToSend);
 
     try {
       const response = await fetch(apiUrl + "/fichajes/", {
@@ -59,10 +61,9 @@ function CargarArchivos() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  // Nueva función para manejar la imagen
+ 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, imagen: e.target.files[0] });
+    setFormData({ ...formData, fichero1: e.target.files[0] });
   };
 
   return (
@@ -84,14 +85,14 @@ function CargarArchivos() {
           name="fichero1"
           onChange={handleFileChange} // Usa la nueva función para manejar archivos
         />
-        <p>Fichero 2</p>
+        {/* <p>Fichero 2</p>
         <TextField
           id="fichero2"
           variant="outlined"
           type="file"
           name="fichero2"
           onChange={handleFileChange} // Usa la nueva función para manejar archivos
-        />
+        /> */}
         <Button variant="outlined" type="submit">
           Cargar archivos
         </Button>

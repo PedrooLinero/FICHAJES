@@ -11,7 +11,7 @@ const sequelize = require("../config/sequelize.js");
 // Cargar las definiciones del modelo en sequelize
 const models = initModels(sequelize);
 // Recuperar el modelo fichajes
-const Fichajes = models.fichajes;
+const Registros = models.registros;
 
 class FichajesController {
   static async guardarFicheros(req, res) {
