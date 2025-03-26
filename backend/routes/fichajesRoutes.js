@@ -1,7 +1,9 @@
+// backend/routes/fichajesRoutes.js
+
 const express = require("express");
 const multer = require("multer");
 const router = express.Router();
-const FichajesController = require("../controller/fichajesController.js");
+const FichajesController = require('../controller/fichajesController');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -16,7 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Rutas para la gestión de fichajes
 router.post("/", upload.single("fichero1"), FichajesController.guardarFicheros);
 
 module.exports = router;

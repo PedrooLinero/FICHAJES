@@ -1,6 +1,6 @@
 var DataTypes = require("sequelize").DataTypes;
 // var _artistas = require("./artistas");
-var _fichajes = require("./obras");
+var _fichajes = require("./fichajes");
 
 function initModels(sequelize) {
   // var artistas = _artistas(sequelize, DataTypes);
@@ -13,8 +13,8 @@ function initModels(sequelize) {
   // obras.belongsTo(artistas, { as: "artista", foreignKey: "idartista" });
 
   return {
-    artistas,
-    obras
+    // artistas,
+    fichajes
   };
 }
 
