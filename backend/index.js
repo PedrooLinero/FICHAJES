@@ -5,7 +5,7 @@ const path = require("path");
 // Importar libreria CORS
 const cors = require("cors");
 // Importar gestores de rutas
-const fichajesRoutes = require("./routes/fichajesRoutes");
+const registrosRoutes = require("./routes/registrosRoutes");
 // const artistaRoutes = require("./routes/artistaRoutes");
 // const pedidoRoutes = require("./routes/pedidoRoutes");
 
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cors());
 
 // Configurar rutas de la API Rest
-app.use("/api/fichajes", fichajesRoutes);
+app.use("/api/registros", registrosRoutes);
 // app.use("/api/artistas", artistaRoutes);
 
 // // Configurar el middleware para servir archivos estáticos desde el directorio 'public\old_js_vainilla'

@@ -4,7 +4,6 @@ var _registros = require("./registros");
 function initModels(sequelize) {
   var registros = _registros(sequelize, DataTypes);
 
-
   return {
     registros,
   };

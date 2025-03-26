@@ -13,7 +13,7 @@ const models = initModels(sequelize);
 // Recuperar el modelo fichajes
 const Registros = models.registros;
 
-class FichajesController {
+class registrosController {
   static async guardarFicheros(req, res) {
     const fichero1 = req.file ? req.file.filename : null;
     console.log(fichero1);
@@ -22,4 +22,4 @@ class FichajesController {
   }
 }
 
-module.exports = FichajesController;
+module.exports = registrosController;

@@ -3,7 +3,7 @@
 const express = require("express");
 const multer = require("multer");
 const router = express.Router();
-const FichajesController = require('../controller/fichajesController');
+const registrosController = require('../controller/registrosController');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,6 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/", upload.single("fichero1"), FichajesController.guardarFicheros);
+router.post("/", upload.single("fichero1"), registrosController.guardarFicheros);
 
 module.exports = router;
