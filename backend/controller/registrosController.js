@@ -65,20 +65,30 @@ class registrosController {
       console.log("Datos leídos del Excel1:", excelData1);
       let excel2 = [];
       for (let i = 5; i < excelData2.length; i++) {
-        // const element = array[i];
-        console.log("Datos leídos del Excel2:", excelData2[i]["__EMPTY_1"]);
+        // console.log("Datos leídos del Excel2:", excelData2[i]);
 
-        excel2.push({"Fecha":excelData2[i]["__EMPTY_1"]})
-
-        // excel2 += {}
-        // let valores = excelData2[i].split(":");
-        // console.log(valores[1]);
-        console.log("---------------------");
-        
+        excel2.push({
+          Centro: excelData2[i]["__EMPTY_4"],
+          Fecha: excelData2[i]["__EMPTY_1"],
+          IDSAP: excelData2[i]["__EMPTY_2"],
+          Trabajador: excelData2[i]["__EMPTY_3"],
+          Grupo: excelData2[i]["__EMPTY_5"],
+          Parte: excelData2[i]["__EMPTY_6"],
+          Planificado: excelData2[i]["__EMPTY_7"],
+          Dato_no_conocido: excelData2[i]["__EMPTY_8"],
+          Real: excelData2[i]["__EMPTY_9"],
+          Dato_no_conocido: excelData2[i]["__EMPTY_10"],
+          Tabla_vacia: excelData2[i]["__EMPTY_11"],
+          Estado: excelData2[i]["__EMPTY_12"],
+          Tabla_vacia: excelData2[i]["__EMPTY_13"],
+          Acción_Realizada: excelData2[i]["__EMPTY_14"],
+          Usuario: excelData2[i]["__EMPTY_15"],
+          Fecha_hora: excelData2[i]["__EMPTY_16"],
+          Terminal: excelData2[i]["__EMPTY_17"],
+        });
       }
 
       console.log(excel2);
-      
 
       // Responder con los datos del archivo
       res.status(200).json({
