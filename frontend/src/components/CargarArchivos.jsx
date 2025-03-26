@@ -38,7 +38,7 @@ function CargarArchivos() {
     console.log(formDataToSend);
 
     try {
-      const response = await fetch(apiUrl + "/fichajes/", {
+      const response = await fetch(apiUrl + "/registros/", {
         method: "POST",
         body: formDataToSend, // Enviar el FormData
         credentials: "include", // Para aceptar cookies en la respuesta y enviarlas si las hay
