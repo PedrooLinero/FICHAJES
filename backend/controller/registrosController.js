@@ -23,28 +23,26 @@ class registrosController {
   // Método para leer ficheros
   static leerExcel(nombreFichero) {
     try {
-      // Ruta del archivo subido
-      const filePath = path.join(__dirname, "uploads", nombreFichero);
-  
+      // Subir un nivel desde el directorio "controller" para llegar a "backend"
+      const filePath = path.join(__dirname, "..", "uploads", nombreFichero);
+      
       // Leer el archivo Excel
       const workbook = XLSX.readFile(filePath);
-  
-      // Obtener la primera hoja de trabajo (puedes modificarlo para obtener la hoja que necesites)
-      const sheetName = workbook.SheetNames[0];  // Nombre de la primera hoja
+      
+      // Obtener la primera hoja de trabajo
+      const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-  
-      // Convertir la hoja a un JSON (esto te da los datos como un array de objetos)
+      
+      // Convertir la hoja a JSON
       const data = XLSX.utils.sheet_to_json(sheet);
-  
-      // Responder con los datos obtenidos
-      // res.json(data);
-      console.log(data);
+      
+      return data;
     } catch (error) {
       console.error("Error al leer el archivo Excel:", error);
-      // res.status(500).json({ message: "Error al leer el archivo Excel." });
+      throw new Error("Error al leer el archivo Excel.");
     }
   }
-
+  
   static async guardarFicheros(req, res) {
     const fichero1 = req.file ? req.file.filename : null;
     console.log(fichero1);
