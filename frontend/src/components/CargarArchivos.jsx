@@ -16,27 +16,27 @@ function CargarArchivos() {
     // Crear un objeto FormData
     const formDataToSend = new FormData();
 
-    // Agregar los campos al FormData
-    formDataToSend.append("correo", formData.correo);
-    formDataToSend.append("contrasena", formData.contrasena);
-    formDataToSend.append("nombre", formData.nombre);
-    formDataToSend.append("edad", formData.edad);
-    formDataToSend.append("posicion", formData.posicion);
-    formDataToSend.append("numero_camiseta", formData.numero_camiseta);
-    formDataToSend.append(
-      "fecha_ingreso",
-      formData.fecha_ingreso.toISOString()
-    ); // Convertir fecha a string
-    formDataToSend.append("estado", formData.estado);
-    formDataToSend.append("idclub", formData.idclub);
+    // // Agregar los campos al FormData
+    // formDataToSend.append("correo", formData.correo);
+    // formDataToSend.append("contrasena", formData.contrasena);
+    // formDataToSend.append("nombre", formData.nombre);
+    // formDataToSend.append("edad", formData.edad);
+    // formDataToSend.append("posicion", formData.posicion);
+    // formDataToSend.append("numero_camiseta", formData.numero_camiseta);
+    // formDataToSend.append(
+    //   "fecha_ingreso",
+    //   formData.fecha_ingreso.toISOString()
+    // ); // Convertir fecha a string
+    // formDataToSend.append("estado", formData.estado);
+    // formDataToSend.append("idclub", formData.idclub);
 
     // Agregar la imagen si existe
-    if (formData.imagen) {
-      formDataToSend.append("imagen", formData.imagen);
+    if (formData.fichero1) {
+      formDataToSend.append("fichero1", formData.fichero1);
     }
 
     try {
-      const response = await fetch(apiUrl + "/jugadoras", {
+      const response = await fetch(apiUrl + "/fichajes/", {
         method: "POST",
         body: formDataToSend, // Enviar el FormData
         credentials: "include", // Para aceptar cookies en la respuesta y enviarlas si las hay
@@ -46,7 +46,7 @@ function CargarArchivos() {
 
       if (response.ok) {
         alert(data.mensaje);
-        navigate("/home/team"); // Redirige tras el login exitoso
+        navigate("/");
       } else {
         alert(data.mensaje);
       }
