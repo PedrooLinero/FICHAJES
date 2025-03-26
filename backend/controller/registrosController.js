@@ -53,9 +53,7 @@ class registrosController {
     console.log(fichero2);
 
     if (!fichero1 && !fichero2) {
-      return res
-        .status(400)
-        .json({ message: "Se debe subir varios ficheros" });
+      return res.status(400).json({ message: "Se debe subir varios ficheros" });
     }
 
     try {
@@ -65,7 +63,22 @@ class registrosController {
 
       // Aquí puedes hacer lo que necesites con los datos leídos, por ejemplo, guardarlos en la base de datos.
       console.log("Datos leídos del Excel1:", excelData1);
-      console.log("Datos leídos del Excel2:", excelData2[4]);
+      let excel2 = [];
+      for (let i = 5; i < excelData2.length; i++) {
+        // const element = array[i];
+        console.log("Datos leídos del Excel2:", excelData2[i]["__EMPTY_1"]);
+
+        excel2.push({"Fecha":excelData2[i]["__EMPTY_1"]})
+
+        // excel2 += {}
+        // let valores = excelData2[i].split(":");
+        // console.log(valores[1]);
+        console.log("---------------------");
+        
+      }
+
+      console.log(excel2);
+      
 
       // Responder con los datos del archivo
       res.status(200).json({
