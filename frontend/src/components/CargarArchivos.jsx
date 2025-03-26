@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Toolbar, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, Grid, Paper } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { apiUrl } from "../config";
@@ -14,36 +14,17 @@ function CargarArchivos() {
     console.log(formData);
     e.preventDefault();
 
-    // Crear un objeto FormData
     const formDataToSend = new FormData();
-
-    // // Agregar los campos al FormData
-    // formDataToSend.append("correo", formData.correo);
-    // formDataToSend.append("contrasena", formData.contrasena);
-    // formDataToSend.append("nombre", formData.nombre);
-    // formDataToSend.append("edad", formData.edad);
-    // formDataToSend.append("posicion", formData.posicion);
-    // formDataToSend.append("numero_camiseta", formData.numero_camiseta);
-    // formDataToSend.append(
-    //   "fecha_ingreso",
-    //   formData.fecha_ingreso.toISOString()
-    // ); // Convertir fecha a string
-    // formDataToSend.append("estado", formData.estado);
-    // formDataToSend.append("idclub", formData.idclub);
-
-    // Agregar la imagen si existe
     if (formData.fichero1 && formData.fichero2) {
       formDataToSend.append("fichero1", formData.fichero1);
       formDataToSend.append("fichero2", formData.fichero2);
     }
 
-    console.log(formDataToSend);
-
     try {
       const response = await fetch(apiUrl + "/registros/", {
         method: "POST",
-        body: formDataToSend, // Enviar el FormData
-        credentials: "include", // Para aceptar cookies en la respuesta y enviarlas si las hay
+        body: formDataToSend,
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -59,11 +40,6 @@ function CargarArchivos() {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
- 
   const handleFileChange1 = (e) => {
     setFormData({ ...formData, fichero1: e.target.files[0] });
   };
@@ -74,34 +50,64 @@ function CargarArchivos() {
 
   return (
     <>
-      <h1>Cargar archivos</h1>
-      <Box
-        component="form"
-        sx={{ "& > :not(style)": { m: 1, width: "25ch" } }}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column" }}
-      >
-        <p>Fichero 1</p>
-        <TextField
-          id="fichero1"
-          variant="outlined"
-          type="file"
-          name="fichero1"
-          onChange={handleFileChange1} // Usa la nueva función para manejar archivos
-        />
-        <p>Fichero 2</p>
-        <TextField
-          id="fichero2"
-          variant="outlined"
-          type="file"
-          name="fichero2"
-          onChange={handleFileChange2} // Usa la nueva función para manejar archivos
-        />
-        <Button variant="outlined" type="submit">
-          Cargar archivos
-        </Button>
+      <Box sx={{height: "80vh"}}>
+        <Typography variant="h4" align="center" sx={{ marginBottom: 3 }}>
+          Cargar Archivos
+        </Typography>
+
+        <Paper sx={{ padding: 4, boxShadow: 3 }}>
+          <Box
+            component="form"
+            sx={{ "& > :not(style)": { m: 1, width: "100%" } }}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit}
+          >
+            <Grid container spacing={3}>
+              {/* Fichero 1 */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Fichero 1
+                </Typography>
+                <TextField
+                  id="fichero1"
+                  variant="outlined"
+                  type="file"
+                  fullWidth
+                  onChange={handleFileChange1}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+
+              {/* Fichero 2 */}
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Fichero 2
+                </Typography>
+                <TextField
+                  id="fichero2"
+                  variant="outlined"
+                  type="file"
+                  fullWidth
+                  onChange={handleFileChange2}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+
+            <Box
+              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+            >
+              <Button variant="contained" color="primary" type="submit">
+                Cargar Archivos
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
       </Box>
     </>
   );
