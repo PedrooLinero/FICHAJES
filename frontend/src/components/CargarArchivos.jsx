@@ -7,6 +7,7 @@ function CargarArchivos() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fichero1: null,
+    fichero2: null,
   });
 
   const handleSubmit = async (e) => {
@@ -31,8 +32,9 @@ function CargarArchivos() {
     // formDataToSend.append("idclub", formData.idclub);
 
     // Agregar la imagen si existe
-    if (formData.fichero1) {
+    if (formData.fichero1 && formData.fichero2) {
       formDataToSend.append("fichero1", formData.fichero1);
+      formDataToSend.append("fichero2", formData.fichero2);
     }
 
     console.log(formDataToSend);
@@ -62,8 +64,12 @@ function CargarArchivos() {
     setFormData({ ...formData, [name]: value });
   };
  
-  const handleFileChange = (e) => {
+  const handleFileChange1 = (e) => {
     setFormData({ ...formData, fichero1: e.target.files[0] });
+  };
+
+  const handleFileChange2 = (e) => {
+    setFormData({ ...formData, fichero2: e.target.files[0] });
   };
 
   return (
@@ -83,16 +89,16 @@ function CargarArchivos() {
           variant="outlined"
           type="file"
           name="fichero1"
-          onChange={handleFileChange} // Usa la nueva función para manejar archivos
+          onChange={handleFileChange1} // Usa la nueva función para manejar archivos
         />
-        {/* <p>Fichero 2</p>
+        <p>Fichero 2</p>
         <TextField
           id="fichero2"
           variant="outlined"
           type="file"
           name="fichero2"
-          onChange={handleFileChange} // Usa la nueva función para manejar archivos
-        /> */}
+          onChange={handleFileChange2} // Usa la nueva función para manejar archivos
+        />
         <Button variant="outlined" type="submit">
           Cargar archivos
         </Button>

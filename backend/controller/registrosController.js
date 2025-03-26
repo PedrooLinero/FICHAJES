@@ -19,49 +19,57 @@ const models = initModels(sequelize);
 const Registros = models.registros;
 
 class registrosController {
-
   // Método para leer ficheros
   static leerExcel(nombreFichero) {
     try {
       // Subir un nivel desde el directorio "controller" para llegar a "backend"
       const filePath = path.join(__dirname, "..", "uploads", nombreFichero);
-      
+
       // Leer el archivo Excel
       const workbook = XLSX.readFile(filePath);
-      
+
       // Obtener la primera hoja de trabajo
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      
+
       // Convertir la hoja a JSON
       const data = XLSX.utils.sheet_to_json(sheet);
-      
+
       return data;
     } catch (error) {
       console.error("Error al leer el archivo Excel:", error);
       throw new Error("Error al leer el archivo Excel.");
     }
   }
-  
-  static async guardarFicheros(req, res) {
-    const fichero1 = req.file ? req.file.filename : null;
-    console.log(fichero1);
 
-    if (!fichero1) {
-      return res.status(400).json({ message: "No se ha subido ningún archivo" });
+  static async guardarFicheros(req, res) {
+    const fichero1 = req.files["fichero1"]
+      ? req.files["fichero1"][0].filename
+      : null;
+    const fichero2 = req.files["fichero2"]
+      ? req.files["fichero2"][0].filename
+      : null;
+    console.log(fichero1);
+    console.log(fichero2);
+
+    if (!fichero1 && !fichero2) {
+      return res
+        .status(400)
+        .json({ message: "Se debe subir varios ficheros" });
     }
 
     try {
       // Llamar al método para leer el Excel y obtener los datos
-      const excelData = registrosController.leerExcel(fichero1);
+      const excelData1 = registrosController.leerExcel(fichero1);
+      const excelData2 = registrosController.leerExcel(fichero2);
 
       // Aquí puedes hacer lo que necesites con los datos leídos, por ejemplo, guardarlos en la base de datos.
-      console.log("Datos leídos del Excel:", excelData);
+      console.log("Datos leídos del Excel1:", excelData1);
+      console.log("Datos leídos del Excel2:", excelData2[4]);
 
       // Responder con los datos del archivo
       res.status(200).json({
         mensaje: "Fichero recibido y procesado con éxito",
-        datos: excelData,
       });
     } catch (error) {
       console.error("Error al procesar el archivo:", error);
