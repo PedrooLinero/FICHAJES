@@ -94,7 +94,7 @@ class registrosController {
           Planificado: excelData2[i]["__EMPTY_7"],
           Dato_no_conocido: excelData2[i]["__EMPTY_8"],
           Real: excelData2[i]["__EMPTY_9"],
-          Dato_no_conocido: excelData2[i]["__EMPTY_10"],
+          Total_planificado: excelData2[i]["__EMPTY_10"],
           Tabla_vacia: excelData2[i]["__EMPTY_11"],
           Estado: excelData2[i]["__EMPTY_12"],
           Tabla_vacia: excelData2[i]["__EMPTY_13"],
@@ -107,19 +107,93 @@ class registrosController {
 
       // console.log(excel2);
 
-      for (let i = 0; i < excelData1.length; i++) {
-        const fechaExcel = excelData1[i]["Fecha"];
-        // const fechaFormateada = registrosController.formatExcelDate(fechaExcel);
-        // excelData1[i]["Fecha"] = fechaFormateada; // Actualizar el campo con la fecha formateada
-        console.log(excelData1[i]["Fecha"]); // Ver resultado
+      // for (let i = 0; i < excelData1.length; i++) {
+      //   const fechaExcel = excelData1[i]["Fecha"];
+      //   // const fechaFormateada = registrosController.formatExcelDate(fechaExcel);
+      //   // excelData1[i]["Fecha"] = fechaFormateada; // Actualizar el campo con la fecha formateada
+      //   // console.log(excelData1[i]["Fecha"]); // Ver resultado
 
-        //comparamos las fechas de los 2 excel
+      //   console.log(excelData1[i]);
+
+      //   //comparamos las fechas de los 2 excel
+      //   for (let j = 0; j < excel2.length; j++) {
+      //     if(excelData1[i]["Fecha"] == excelData2[j]["Fecha"]){
+      //       console.log(`Fecha Excel 1: ${fechaExcel} | Fecha Excel 2: ${excel2[j].Fecha}`);
+      //     }
+      //   }
+      // }
+
+      let coincidencia = false;
+
+      for (let i = 0; i < excelData1.length; i++) {
+        let real = "";
+        coincidencia = false;
+        const filaExcel1 = excelData1[i];
+
+        // Verifica si la propiedad Fecha existe y es un número
+        if (typeof filaExcel1?.Fecha !== "number") {
+          // console.warn(`Fila ${i} no tiene fecha válida:`, filaExcel1);
+          continue;
+        }
+
         for (let j = 0; j < excel2.length; j++) {
-          if(excelData1[i]["Fecha"] == excelData2[j]["Fecha"]){
-            console.log(`Fecha Excel 1: ${fechaExcel} | Fecha Excel 2: ${excel2[j].Fecha}`);
+          const filaExcel2 = excel2[j];
+
+          if (
+            filaExcel2?.Fecha === filaExcel1.Fecha &&
+            filaExcel2?.Centro === filaExcel1.Centro &&
+            filaExcel2?.IDSAP === filaExcel1.IDSAP
+          ) {
+            real = filaExcel2?.Real;
+            coincidencia = true;
+            break;
           }
         }
+
+        if (coincidencia == false) {
+          resultado.push({
+            Centro: filaExcel1.Centro,
+            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
+            IDSAP: filaExcel1.IDSAP,
+            Trabajador: filaExcel1.Trabajador,
+            Contratos_Laborales: filaExcel1["Contratos Laborales"],
+            Planificadas: filaExcel1.Planificadas,
+            Realizadas: filaExcel1.Realizadas,
+            Real: "",
+            Presencia: filaExcel1.Presencia,
+            Absentismo: filaExcel1.Absentismo,
+            Ausentismo: filaExcel1.Ausentismo,
+            Sindicales: filaExcel1.Sindicales,
+            Vacaciones: filaExcel1.Vacaciones,
+            Vacaciones_RH: filaExcel1.Vacaciones_RH,
+            Complementarias: filaExcel1.Complementarias,
+            Especiales: filaExcel1.Especiales,
+            ILDI: filaExcel1.ILDI,
+          });
+        } else {
+          resultado.push({
+            Centro: filaExcel1.Centro,
+            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
+            IDSAP: filaExcel1.IDSAP,
+            Trabajador: filaExcel1.Trabajador,
+            Contratos_Laborales: filaExcel1["Contratos Laborales"],
+            Planificadas: filaExcel1.Planificadas,
+            Realizadas: filaExcel1.Realizadas,
+            Real: real,
+            Presencia: filaExcel1.Presencia,
+            Absentismo: filaExcel1.Absentismo,
+            Ausentismo: filaExcel1.Ausentismo,
+            Sindicales: filaExcel1.Sindicales,
+            Vacaciones: filaExcel1.Vacaciones,
+            Vacaciones_RH: filaExcel1.Vacaciones_RH,
+            Complementarias: filaExcel1.Complementarias,
+            Especiales: filaExcel1.Especiales,
+            ILDI: filaExcel1.ILDI,
+          });
+        }
       }
+
+      console.log(resultado);
 
       // Responder con los datos del archivo
       res.status(200).json({
