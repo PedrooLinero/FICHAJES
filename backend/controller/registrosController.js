@@ -66,6 +66,8 @@ class registrosController {
     console.log(fichero1);
     console.log(fichero2);
 
+    const filePath = path.join(__dirname, "..", "uploads");
+
     if (!fichero1 && !fichero2) {
       return res.status(400).json({ message: "Se debe subir varios ficheros" });
     }
@@ -80,9 +82,9 @@ class registrosController {
       let excel2 = [];
 
       let resultado = [];
+      let fecha = "";
 
       for (let i = 5; i < excelData2.length; i++) {
-        // console.log("Datos leídos del Excel2:", excelData2[i]);
 
         excel2.push({
           Centro: excelData2[i]["__EMPTY_4"],
@@ -105,28 +107,11 @@ class registrosController {
         });
       }
 
-      // console.log(excel2);
-
-      // for (let i = 0; i < excelData1.length; i++) {
-      //   const fechaExcel = excelData1[i]["Fecha"];
-      //   // const fechaFormateada = registrosController.formatExcelDate(fechaExcel);
-      //   // excelData1[i]["Fecha"] = fechaFormateada; // Actualizar el campo con la fecha formateada
-      //   // console.log(excelData1[i]["Fecha"]); // Ver resultado
-
-      //   console.log(excelData1[i]);
-
-      //   //comparamos las fechas de los 2 excel
-      //   for (let j = 0; j < excel2.length; j++) {
-      //     if(excelData1[i]["Fecha"] == excelData2[j]["Fecha"]){
-      //       console.log(`Fecha Excel 1: ${fechaExcel} | Fecha Excel 2: ${excel2[j].Fecha}`);
-      //     }
-      //   }
-      // }
-
       let coincidencia = false;
 
       for (let i = 0; i < excelData1.length; i++) {
         let real = "";
+        let planificado = "";
         coincidencia = false;
         const filaExcel1 = excelData1[i];
 
@@ -145,6 +130,7 @@ class registrosController {
             filaExcel2?.IDSAP === filaExcel1.IDSAP
           ) {
             real = filaExcel2?.Real;
+            planificado = filaExcel2?.Planificado;
             coincidencia = true;
             break;
           }
@@ -158,6 +144,7 @@ class registrosController {
             Trabajador: filaExcel1.Trabajador,
             Contratos_Laborales: filaExcel1["Contratos Laborales"],
             Planificadas: filaExcel1.Planificadas,
+            Planificado: "",
             Realizadas: filaExcel1.Realizadas,
             Real: "",
             Presencia: filaExcel1.Presencia,
@@ -170,6 +157,7 @@ class registrosController {
             Especiales: filaExcel1.Especiales,
             ILDI: filaExcel1.ILDI,
           });
+          fecha = registrosController.formatExcelDate(filaExcel1.Fecha);
         } else {
           resultado.push({
             Centro: filaExcel1.Centro,
@@ -178,6 +166,7 @@ class registrosController {
             Trabajador: filaExcel1.Trabajador,
             Contratos_Laborales: filaExcel1["Contratos Laborales"],
             Planificadas: filaExcel1.Planificadas,
+            Planificado: planificado,
             Realizadas: filaExcel1.Realizadas,
             Real: real,
             Presencia: filaExcel1.Presencia,
@@ -193,7 +182,17 @@ class registrosController {
         }
       }
 
-      console.log(resultado);
+      // console.log(resultado);
+
+      // Crear un nuevo libro de Excel
+      const workbook = XLSX.utils.book_new();
+
+      // Convertir el array de objetos a una hoja de cálculo
+      const worksheet = XLSX.utils.json_to_sheet(resultado);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
+
+      XLSX.writeFile(workbook, path.join(filePath, "resultado.xlsx"));
 
       // Responder con los datos del archivo
       res.status(200).json({

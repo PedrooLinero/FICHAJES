@@ -31,7 +31,7 @@ function CargarArchivos() {
 
       if (response.ok) {
         alert(data.mensaje);
-        navigate("/");
+        navigate(0);
       } else {
         alert(data.mensaje);
       }
