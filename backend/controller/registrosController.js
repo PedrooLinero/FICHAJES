@@ -82,10 +82,8 @@ class registrosController {
       let excel2 = [];
 
       let resultado = [];
-      let fecha = "";
 
       for (let i = 5; i < excelData2.length; i++) {
-
         excel2.push({
           Centro: excelData2[i]["__EMPTY_4"],
           Fecha: excelData2[i]["__EMPTY_1"],
@@ -113,11 +111,14 @@ class registrosController {
         let real = "";
         let planificado = "";
         coincidencia = false;
+
         const filaExcel1 = excelData1[i];
+
+        let trabajador = String(filaExcel1.Trabajador).split("-");
+        let idsap = trabajador[0].trim();
 
         // Verifica si la propiedad Fecha existe y es un número
         if (typeof filaExcel1?.Fecha !== "number") {
-          // console.warn(`Fila ${i} no tiene fecha válida:`, filaExcel1);
           continue;
         }
 
@@ -127,7 +128,7 @@ class registrosController {
           if (
             filaExcel2?.Fecha === filaExcel1.Fecha &&
             filaExcel2?.Centro === filaExcel1.Centro &&
-            filaExcel2?.IDSAP === filaExcel1.IDSAP
+            filaExcel2?.IDSAP === idsap
           ) {
             real = filaExcel2?.Real;
             planificado = filaExcel2?.Planificado;
@@ -139,45 +140,70 @@ class registrosController {
         if (coincidencia == false) {
           resultado.push({
             Centro: filaExcel1.Centro,
-            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
-            IDSAP: filaExcel1.IDSAP,
             Trabajador: filaExcel1.Trabajador,
-            Contratos_Laborales: filaExcel1["Contratos Laborales"],
-            Planificadas: filaExcel1.Planificadas,
-            Planificado: "",
-            Realizadas: filaExcel1.Realizadas,
+            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
+            Contratos_Laborales: decimalAHorasMinutos(
+              filaExcel1["Contratos Laborales"]
+            ),
+            Complem: decimalAHorasMinutos(filaExcel1["Complem."]),
+            Especiales: decimalAHorasMinutos(filaExcel1.Especiales),
+            Absentismo: decimalAHorasMinutos(filaExcel1.Absentismo),
+            Ausentismo: decimalAHorasMinutos(filaExcel1.Ausentismo),
+            Sindicales: decimalAHorasMinutos(filaExcel1.Sindicales),
+            Vacaciones: decimalAHorasMinutos(filaExcel1.Vacaciones),
+            Vacaciones_RH: decimalAHorasMinutos(filaExcel1["Vacaciones RH"]),
+            Presencia_Esperada: decimalAHorasMinutos(
+              filaExcel1["Presencia Esperada"]
+            ),
             Real: "",
-            Presencia: filaExcel1.Presencia,
-            Absentismo: filaExcel1.Absentismo,
-            Ausentismo: filaExcel1.Ausentismo,
-            Sindicales: filaExcel1.Sindicales,
-            Vacaciones: filaExcel1.Vacaciones,
-            Vacaciones_RH: filaExcel1.Vacaciones_RH,
-            Complementarias: filaExcel1.Complementarias,
-            Especiales: filaExcel1.Especiales,
-            ILDI: filaExcel1.ILDI,
+            Presencia_Fichaje: decimalAHorasMinutos(
+              filaExcel1["Presencia Fichaje"]
+            ),
+            "Pres.Esp. - Pres.Fichaje": decimalAHorasMinutos(
+              filaExcel1["Pres.Esp. - Pres.Fichaje"]
+            ),
+            "% Presencia vs Contr.-Aus.": convertirPorcentaje(
+              filaExcel1["% Presencia vs Contr.-Aus."]
+            ),
+            Planificadas: decimalAHorasMinutos(filaExcel1.Planificadas),
+            Planificado: "",
+            "Trabajo Efectivo": decimalAHorasMinutos(
+              filaExcel1["Trabajo Efectivo"]
+            ),
           });
-          fecha = registrosController.formatExcelDate(filaExcel1.Fecha);
         } else {
           resultado.push({
             Centro: filaExcel1.Centro,
-            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
-            IDSAP: filaExcel1.IDSAP,
             Trabajador: filaExcel1.Trabajador,
-            Contratos_Laborales: filaExcel1["Contratos Laborales"],
-            Planificadas: filaExcel1.Planificadas,
-            Planificado: planificado,
-            Realizadas: filaExcel1.Realizadas,
+            Fecha: registrosController.formatExcelDate(filaExcel1.Fecha),
+            Contratos_Laborales: decimalAHorasMinutos(
+              filaExcel1["Contratos Laborales"]
+            ),
+            Complem: decimalAHorasMinutos(filaExcel1["Complem."]),
+            Especiales: decimalAHorasMinutos(filaExcel1.Especiales),
+            Absentismo: decimalAHorasMinutos(filaExcel1.Absentismo),
+            Ausentismo: decimalAHorasMinutos(filaExcel1.Ausentismo),
+            Sindicales: decimalAHorasMinutos(filaExcel1.Sindicales),
+            Vacaciones: decimalAHorasMinutos(filaExcel1.Vacaciones),
+            Vacaciones_RH: decimalAHorasMinutos(filaExcel1["Vacaciones RH"]),
+            Presencia_Esperada: decimalAHorasMinutos(
+              filaExcel1["Presencia Esperada"]
+            ),
             Real: real,
-            Presencia: filaExcel1.Presencia,
-            Absentismo: filaExcel1.Absentismo,
-            Ausentismo: filaExcel1.Ausentismo,
-            Sindicales: filaExcel1.Sindicales,
-            Vacaciones: filaExcel1.Vacaciones,
-            Vacaciones_RH: filaExcel1.Vacaciones_RH,
-            Complementarias: filaExcel1.Complementarias,
-            Especiales: filaExcel1.Especiales,
-            ILDI: filaExcel1.ILDI,
+            Presencia_Fichaje: decimalAHorasMinutos(
+              filaExcel1["Presencia Fichaje"]
+            ),
+            "Pres.Esp. - Pres.Fichaje": decimalAHorasMinutos(
+              filaExcel1["Pres.Esp. - Pres.Fichaje"]
+            ),
+            "% Presencia vs Contr.-Aus.": convertirPorcentaje(
+              filaExcel1["% Presencia vs Contr.-Aus."]
+            ),
+            Planificadas: decimalAHorasMinutos(filaExcel1.Planificadas),
+            Planificado: planificado,
+            "Trabajo Efectivo": decimalAHorasMinutos(
+              filaExcel1["Trabajo Efectivo"]
+            ),
           });
         }
       }
@@ -206,6 +232,71 @@ class registrosController {
     // Aquí puedes agregar la lógica para guardar el fichero, si es necesario
     // res.status(200).json({ mensaje: "Fichero recibido", fichero: fichero1 });
   }
+}
+
+function decimalAHorasMinutos(input) {
+  // Caso 1: Si es número decimal (ej: 0.20 o -1.25)
+  if (typeof input === "number") {
+    const esNegativo = input < 0;
+    const valorAbsoluto = Math.abs(input);
+
+    const horas = Math.floor(valorAbsoluto);
+    const minutos = Math.round((valorAbsoluto - horas) * 60);
+
+    const horasStr = horas.toString().padStart(2, "0");
+    const minutosStr = minutos.toString().padStart(2, "0");
+
+    return `${esNegativo ? "-" : ""}${horasStr}:${minutosStr}`;
+  }
+
+  // Caso 2: Si ya está en formato HH:MM (ej: -1:57 o 2:30)
+  if (typeof input === "string" && input.includes(":")) {
+    const [horasStr, minutosStr] = input.split(":");
+    const horas = parseInt(horasStr);
+    const minutos = parseInt(minutosStr);
+
+    // Validar formato correcto
+    if (!isNaN(horas) && !isNaN(minutos) && minutos >= 0 && minutos < 60) {
+      return input; // Devolver tal cual si ya está bien formateado
+    }
+  }
+
+  // Si el formato no es reconocido
+  throw new Error(`Formato de hora no reconocido: ${input}`);
+}
+
+function convertirPorcentaje(input) {
+  // Caso 1: Si es número (ej: 1.02, 0.23456, -0.751)
+  if (typeof input === "number") {
+    let porcentaje = (input * 100).toString();
+
+    // Opcional: Limitar decimales (truncando, no redondeando)
+    const partes = porcentaje.split(".");
+    if (partes[1] && partes[1].length > 2) {
+      porcentaje = partes[0] + "." + partes[1].substring(0, 2);
+    }
+
+    return `${porcentaje}%`;
+  }
+
+  // Caso 2: Si es string con % (ej: "102.123%", "-75.5%")
+  if (typeof input === "string" && input.includes("%")) {
+    const valorSinPorcentaje = input.replace("%", "").trim();
+    const numero = parseFloat(valorSinPorcentaje);
+
+    if (!isNaN(numero)) {
+      // Devuelve el string original si ya es porcentaje válido
+      return input;
+    }
+  }
+
+  // Caso 3: Si es string numérico sin % (ej: "1.02", "0.751")
+  if (typeof input === "string" && !isNaN(parseFloat(input))) {
+    const numero = parseFloat(input) * 100;
+    return `${numero}%`;
+  }
+
+  throw new Error(`Formato no reconocido: ${input}`);
 }
 
 module.exports = registrosController;
