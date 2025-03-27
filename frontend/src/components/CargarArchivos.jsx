@@ -27,14 +27,16 @@ function CargarArchivos() {
         credentials: "include",
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(data.mensaje);
-        navigate(0);
-      } else {
-        alert(data.mensaje);
-      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "resultado.xlsx"; // Nombre del archivo
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      
     } catch (error) {
       alert("Error de red. Inténtalo de nuevo más tarde.");
     }
@@ -50,7 +52,7 @@ function CargarArchivos() {
 
   return (
     <>
-      <Box sx={{height: "80vh"}}>
+      <Box sx={{ height: "80vh" }}>
         <Typography variant="h4" align="center" sx={{ marginBottom: 3 }}>
           Cargar Archivos
         </Typography>

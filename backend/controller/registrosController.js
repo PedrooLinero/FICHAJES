@@ -21,13 +21,12 @@ const Registros = models.registros;
 class registrosController {
   //conversor de fecha
   static formatExcelDate(excelSerialDate) {
-    const utcDays = excelSerialDate - 25569; // Diferencia entre 1900-01-01 y 1970-01-01
-    const utcMillis = utcDays * 86400000; // Milisegundos desde 1970-01-01
+    const utcDays = excelSerialDate - 25569;
+    const utcMillis = utcDays * 86400000;
     const date = new Date(utcMillis);
 
-    // Obtener componentes UTC para evitar problemas de zona horaria
     const day = date.getUTCDate().toString().padStart(2, "0");
-    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0"); // Meses son 0-based
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
     const year = date.getUTCFullYear();
 
     return `${day}/${month}/${year}`;
@@ -63,10 +62,6 @@ class registrosController {
     const fichero2 = req.files["fichero2"]
       ? req.files["fichero2"][0].filename
       : null;
-    console.log(fichero1);
-    console.log(fichero2);
-
-    const filePath = path.join(__dirname, "..", "uploads");
 
     if (!fichero1 && !fichero2) {
       return res.status(400).json({ message: "Se debe subir varios ficheros" });
@@ -77,8 +72,6 @@ class registrosController {
       const excelData1 = registrosController.leerExcel(fichero1);
       const excelData2 = registrosController.leerExcel(fichero2);
 
-      // Aquí puedes hacer lo que necesites con los datos leídos, por ejemplo, guardarlos en la base de datos.
-      // console.log("Datos leídos del Excel1:", excelData1);
       let excel2 = [];
 
       let resultado = [];
@@ -208,8 +201,6 @@ class registrosController {
         }
       }
 
-      // console.log(resultado);
-
       // Crear un nuevo libro de Excel
       const workbook = XLSX.utils.book_new();
 
@@ -218,24 +209,28 @@ class registrosController {
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
 
-      XLSX.writeFile(workbook, path.join(filePath, "resultado.xlsx"));
-
-      // Responder con los datos del archivo
-      res.status(200).json({
-        mensaje: "Fichero recibido y procesado con éxito",
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "buffer",
       });
+
+      //Configurar headers para descarga
+      res.setHeader("Content-Disposition", "attachment; filename=resultado.xlsx");
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      res.send(excelBuffer);
+
     } catch (error) {
       console.error("Error al procesar el archivo:", error);
       res.status(500).json({ message: "Error al procesar el archivo Excel." });
     }
-
-    // Aquí puedes agregar la lógica para guardar el fichero, si es necesario
-    // res.status(200).json({ mensaje: "Fichero recibido", fichero: fichero1 });
   }
 }
 
 function decimalAHorasMinutos(input) {
-  // Caso 1: Si es número decimal (ej: 0.20 o -1.25)
   if (typeof input === "number") {
     const esNegativo = input < 0;
     const valorAbsoluto = Math.abs(input);
@@ -249,7 +244,6 @@ function decimalAHorasMinutos(input) {
     return `${esNegativo ? "-" : ""}${horasStr}:${minutosStr}`;
   }
 
-  // Caso 2: Si ya está en formato HH:MM (ej: -1:57 o 2:30)
   if (typeof input === "string" && input.includes(":")) {
     const [horasStr, minutosStr] = input.split(":");
     const horas = parseInt(horasStr);
@@ -257,20 +251,17 @@ function decimalAHorasMinutos(input) {
 
     // Validar formato correcto
     if (!isNaN(horas) && !isNaN(minutos) && minutos >= 0 && minutos < 60) {
-      return input; // Devolver tal cual si ya está bien formateado
+      return input;
     }
   }
 
-  // Si el formato no es reconocido
   throw new Error(`Formato de hora no reconocido: ${input}`);
 }
 
 function convertirPorcentaje(input) {
-  // Caso 1: Si es número (ej: 1.02, 0.23456, -0.751)
   if (typeof input === "number") {
     let porcentaje = (input * 100).toString();
 
-    // Opcional: Limitar decimales (truncando, no redondeando)
     const partes = porcentaje.split(".");
     if (partes[1] && partes[1].length > 2) {
       porcentaje = partes[0] + "." + partes[1].substring(0, 2);
@@ -279,7 +270,6 @@ function convertirPorcentaje(input) {
     return `${porcentaje}%`;
   }
 
-  // Caso 2: Si es string con % (ej: "102.123%", "-75.5%")
   if (typeof input === "string" && input.includes("%")) {
     const valorSinPorcentaje = input.replace("%", "").trim();
     const numero = parseFloat(valorSinPorcentaje);
@@ -290,7 +280,6 @@ function convertirPorcentaje(input) {
     }
   }
 
-  // Caso 3: Si es string numérico sin % (ej: "1.02", "0.751")
   if (typeof input === "string" && !isNaN(parseFloat(input))) {
     const numero = parseFloat(input) * 100;
     return `${numero}%`;
