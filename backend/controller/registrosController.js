@@ -11,7 +11,7 @@ const { logMensaje } = require("../utils/logger.js");
 const initModels = require("../models/init-models.js").initModels;
 // Crear la instancia de sequelize con la conexión a la base de datos
 const sequelize = require("../config/sequelize.js");
-const { log } = require("console");
+const { log, Console } = require("console");
 
 // Cargar las definiciones del modelo en sequelize
 const models = initModels(sequelize);
@@ -19,6 +19,20 @@ const models = initModels(sequelize);
 const Registros = models.registros;
 
 class registrosController {
+  //conversor de fecha
+  static formatExcelDate(excelSerialDate) {
+    const utcDays = excelSerialDate - 25569; // Diferencia entre 1900-01-01 y 1970-01-01
+    const utcMillis = utcDays * 86400000; // Milisegundos desde 1970-01-01
+    const date = new Date(utcMillis);
+
+    // Obtener componentes UTC para evitar problemas de zona horaria
+    const day = date.getUTCDate().toString().padStart(2, "0");
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0"); // Meses son 0-based
+    const year = date.getUTCFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
   // Método para leer ficheros
   static leerExcel(nombreFichero) {
     try {
@@ -62,8 +76,11 @@ class registrosController {
       const excelData2 = registrosController.leerExcel(fichero2);
 
       // Aquí puedes hacer lo que necesites con los datos leídos, por ejemplo, guardarlos en la base de datos.
-      console.log("Datos leídos del Excel1:", excelData1);
+      // console.log("Datos leídos del Excel1:", excelData1);
       let excel2 = [];
+
+      let resultado = [];
+
       for (let i = 5; i < excelData2.length; i++) {
         // console.log("Datos leídos del Excel2:", excelData2[i]);
 
@@ -88,7 +105,21 @@ class registrosController {
         });
       }
 
-      console.log(excel2);
+      // console.log(excel2);
+
+      for (let i = 0; i < excelData1.length; i++) {
+        const fechaExcel = excelData1[i]["Fecha"];
+        // const fechaFormateada = registrosController.formatExcelDate(fechaExcel);
+        // excelData1[i]["Fecha"] = fechaFormateada; // Actualizar el campo con la fecha formateada
+        console.log(excelData1[i]["Fecha"]); // Ver resultado
+
+        //comparamos las fechas de los 2 excel
+        for (let j = 0; j < excel2.length; j++) {
+          if(excelData1[i]["Fecha"] == excelData2[j]["Fecha"]){
+            console.log(`Fecha Excel 1: ${fechaExcel} | Fecha Excel 2: ${excel2[j].Fecha}`);
+          }
+        }
+      }
 
       // Responder con los datos del archivo
       res.status(200).json({
