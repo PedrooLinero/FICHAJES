@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createHashRouter, RouterProvider } from "react-router"; // <-- Cambiar BrowserRouter por HashRouter
 import CargarArchivos from "./components/CargarArchivos";
 
 import "@fontsource/roboto/300.css";
@@ -10,18 +10,14 @@ import "@fontsource/roboto/700.css";
 
 import Home from "./pages/Home";
 
-
-let router = createBrowserRouter([
-  // errorElement: <PaginaError />,
+let router = createHashRouter([
   {
-    path: "/", // Ruta independiente para la página de inicio
+    path: "/",
     element: <Home />,
-    children: [
-      {
-        path: "/",
-        element: <CargarArchivos />,
-      },
-    ]
+  },
+  {
+    path: "/cargar",
+    element: <CargarArchivos />,
   },
 ]);
 

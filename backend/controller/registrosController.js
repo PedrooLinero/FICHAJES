@@ -36,7 +36,7 @@ class registrosController {
   static leerExcel(nombreFichero) {
     try {
       // Subir un nivel desde el directorio "controller" para llegar a "backend"
-      const filePath = path.join(__dirname, "..", "uploads", nombreFichero);
+      const filePath = path.join(__dirname, "..", "public/prod/uploads", nombreFichero);
 
       // Leer el archivo Excel
       const workbook = XLSX.readFile(filePath);
@@ -62,6 +62,9 @@ class registrosController {
     const fichero2 = req.files["fichero2"]
       ? req.files["fichero2"][0].filename
       : null;
+
+      console.log("Fichero 1:", fichero1);
+      console.log("Fichero 2:", fichero2);
 
     if (!fichero1 && !fichero2) {
       return res.status(400).json({ message: "Se debe subir varios ficheros" });
