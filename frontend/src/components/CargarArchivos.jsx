@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 import { apiUrl } from "../config";
 
 function CargarArchivos() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fichero1: null,
     fichero2: null,
@@ -21,7 +20,7 @@ function CargarArchivos() {
     }
 
     try {
-      const response = await fetch(apiUrl + "/registros/", {
+      const response = await fetch(apiUrl + "/registros", {
         method: "POST",
         body: formDataToSend,
         credentials: "include",
@@ -52,9 +51,9 @@ function CargarArchivos() {
 
   return (
     <>
-      <Box sx={{ height: "80vh" }}>
-        <Typography variant="h4" align="center" sx={{ marginBottom: 3 }}>
-          Cargar Archivos
+      <Box sx={{ height: "72vh" }}>
+        <Typography variant="h4" align="center" sx={{ margin: 3 }}>
+          Insertar archivos
         </Typography>
 
         <Paper sx={{ padding: 4, boxShadow: 3 }}>
@@ -68,8 +67,8 @@ function CargarArchivos() {
             <Grid container spacing={3}>
               {/* Fichero 1 */}
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Fichero 1
+                <Typography variant="subtitle1" gutterBottom sx={{fontWeight: "700"}}>
+                  PowerBI:
                 </Typography>
                 <TextField
                   id="fichero1"
@@ -80,13 +79,14 @@ function CargarArchivos() {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  required
                 />
               </Grid>
 
               {/* Fichero 2 */}
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Fichero 2
+                <Typography variant="subtitle1" gutterBottom sx={{fontWeight: "700"}}>
+                  SIGGA:
                 </Typography>
                 <TextField
                   id="fichero2"
@@ -97,15 +97,16 @@ function CargarArchivos() {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  required
                 />
               </Grid>
             </Grid>
 
             <Box
-              sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}
+              sx={{ display: "flex", justifyContent: "left", marginLeft: 1 }}
             >
-              <Button variant="contained" color="primary" type="submit">
-                Cargar Archivos
+              <Button variant="contained" color="primary" type="submit" sx={{marginTop: 2, marginLeft: 3}}>
+                Descargar excel
               </Button>
             </Box>
           </Box>
