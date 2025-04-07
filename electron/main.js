@@ -1,45 +1,71 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const express = require('../backend/index.js'); // Importamos tu servidor Express
- 
+const path = require("path");
+const { app, BrowserWindow } = require("electron");
+const { fork } = require("child_process");
+
 let mainWindow;
- 
+let backendProcess;
+
 function createWindow() {
-  // Crear la ventana del navegador.
+  // Detectar la ruta correcta del backend
+  const backendScript =
+    process.env.NODE_ENV === "development"
+      ? path.join(__dirname, "../FICHAJES/backend/index.js") // Ruta en desarrollo
+      : path.join(process.resourcesPath, "app", "backend", "index.js"); // Ruta en producción
+
+  console.log("Ejecutando backend desde:", backendScript);
+
+  // Iniciar el backend como un proceso hijo
+  backendProcess = fork(backendScript, {
+    cwd: path.dirname(backendScript), // Asegurar que el backend se ejecuta en su carpeta
+  });
+
+  backendProcess.on("error", (err) => {
+    console.error("Error al iniciar el backend:", err);
+  });
+
+  backendProcess.on("exit", (code, signal) => {
+    console.log(`El backend se cerró con código: ${code}, señal: ${signal}`);
+  });
+
+  // Crear la ventana de Electron
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   });
- 
-  // Cargar la aplicación React
-  if (process.env.NODE_ENV === 'development') {
-    // En desarrollo, cargar desde el servidor de React
-    mainWindow.loadURL(`file://${__dirname}/dist/index.html`);
-    // Abrir las herramientas de desarrollo.
+
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
   } else {
-    // En producción, cargar el archivo build
-    mainWindow.loadFile(path.join(__dirname, '../backend/public/prod/index.html'));
+    const prodPath = path.join(
+      process.resourcesPath,
+      "app",
+      "backend",
+      "public",
+      "prod",
+      "index.html"
+    );
+    console.log("Cargando frontend desde:", prodPath);
+    mainWindow.loadFile(prodPath);
   }
- 
-  // Evento cuando la ventana es cerrada.
-  mainWindow.on('closed', function () {
+
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
- 
-// Este método será llamado cuando Electron haya terminado de inicializarse.
-app.on('ready', createWindow);
- 
-// Salir cuando todas las ventanas estén cerradas.
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
+
+// Cerrar backend cuando se cierre la app
+app.on("window-all-closed", () => {
+  if (backendProcess) backendProcess.kill();
+  if (process.platform !== "darwin") app.quit();
 });
- 
-app.on('activate', function () {
+
+app.whenReady().then(createWindow);
+
+app.on("activate", () => {
   if (mainWindow === null) createWindow();
 });
