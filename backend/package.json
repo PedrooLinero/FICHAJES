@@ -24,6 +24,7 @@
     "mysql2": "^3.12.0",
     "sequelize": "^6.37.5",
     "sequelize-auto": "^0.8.8",
+    "sheetjs-style": "^0.15.8",
     "xlsx": "^0.18.5",
     "xlsx-style": "^0.8.13"
   }
