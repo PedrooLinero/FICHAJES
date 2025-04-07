@@ -1,23 +1,79 @@
 {
-  "name": "tu-aplicacion",
+  "name": "Fichajes_Acciona",
   "version": "1.0.0",
+  "author": "Virginia Muñoz y Pedro Luis Linero",
+  "description": "Aplicacion para gestionar los fichajes de PowerBI y SIGGA",
   "main": "electron/main.js",
   "scripts": {
-    "start": "concurrently \"cd backend && node index.js\" \"cd frontend && npm start\"",
-    "build": "cd frontend && npm run build && xcopy /E /I /Y \"dist\\*\" \"..\\backend\\public\\prod\\\"",
-    "build-dev": "cd frontend && npm run build-dev && xcopy /E /I /Y \"dist\\*\" \"..\\backend\\public\\dev\\\"",
-    "electron": "electron .",
-    "electron-dev": "concurrently \"cd backend && node index.js\" \"cd frontend && npm start\" \"wait-on http://localhost:5173 && electron .\" --kill-others --success first",
-    "package-win": "electron-packager . tu-aplicacion --platform=win32 --arch=x64 --out=dist --overwrite --asar"
+    "start": "electron-forge start",
+    "build": "cd frontend && npm run build && robocopy \"dist\" \"../backend/public/prod\" /E /MIR /NFL /NDL /NJH /NJS /nc /ns /np",
+    "build-dev": "cd frontend && npm run build-dev && robocopy \"dist\" \"../backend/public/dev\" /E /NFL /NDL /NJH /NJS /nc /ns /np",
+    "electron": "cross-env NODE_ENV=production electron .",
+    "electron-dev": "concurrently \"cd backend && node index.js\" \"cd frontend && npm start\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\" --kill-others --success first",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "build": {
+    "appId": "com.tuempresa.tuaplicacion",
+    "productName": "Tu Aplicacion",
+    "directories": {
+      "output": "release",
+      "buildResources": "resources"
+    },
+    "files": [
+      "electron/**/*",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "!backend/node_modules/**"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend"
+      },
+      {
+        "from": "backend/public",
+        "to": "public"
+      },
+      {
+        "from": "backend/uploads",
+        "to": "uploads"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "asar": false
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "electron-squirrel-startup": "^1.0.1",
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "electron": "^25.0.0",
-    "electron-packager": "^17.1.1",
+    "@electron-forge/cli": "^7.8.0",
+    "@electron-forge/maker-deb": "^7.8.0",
+    "@electron-forge/maker-rpm": "^7.8.0",
+    "@electron-forge/maker-squirrel": "^7.8.0",
+    "@electron-forge/maker-zip": "^7.8.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.0",
+    "@electron-forge/plugin-fuses": "^7.8.0",
+    "@electron/fuses": "^1.8.0",
+    "@types/multer": "^1.4.12",
     "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^25.0.0",
     "wait-on": "^7.0.1"
   }
 }
