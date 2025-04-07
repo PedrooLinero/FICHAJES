@@ -34,9 +34,13 @@ class registrosController {
 
   // Método para leer ficheros
   static leerExcel(nombreFichero) {
+    console.log("Ha entrado en leerExcel");
+
     try {
       // Subir un nivel desde el directorio "controller" para llegar a "backend"
-      const filePath = path.join(__dirname, "..", "public/prod/uploads", nombreFichero);
+      const filePath = path.join(__dirname, "../uploads/", nombreFichero);
+
+      console.log("Ha entrado en filePath", filePath);
 
       // Leer el archivo Excel
       const workbook = XLSX.readFile(filePath);
@@ -63,8 +67,8 @@ class registrosController {
       ? req.files["fichero2"][0].filename
       : null;
 
-      console.log("Fichero 1:", fichero1);
-      console.log("Fichero 2:", fichero2);
+    console.log("Fichero 1:", fichero1);
+    console.log("Fichero 2:", fichero2);
 
     if (!fichero1 && !fichero2) {
       return res.status(400).json({ message: "Se debe subir varios ficheros" });
@@ -74,6 +78,9 @@ class registrosController {
       // Llamar al método para leer el Excel y obtener los datos
       const excelData1 = registrosController.leerExcel(fichero1);
       const excelData2 = registrosController.leerExcel(fichero2);
+
+      console.log("Datos del primer Excel:", excelData1);
+      console.log("Datos del segundo Excel:", excelData2);
 
       let excel2 = [];
 
@@ -218,14 +225,16 @@ class registrosController {
       });
 
       //Configurar headers para descarga
-      res.setHeader("Content-Disposition", "attachment; filename=resultado.xlsx");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=resultado.xlsx"
+      );
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       );
 
       res.send(excelBuffer);
-
     } catch (error) {
       console.error("Error al procesar el archivo:", error);
       res.status(500).json({ message: "Error al procesar el archivo Excel." });

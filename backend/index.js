@@ -1,71 +1,88 @@
-// Importar librería express --> web server
 const express = require("express");
-// Importar librería path, para manejar rutas de ficheros en el servidor
 const path = require("path");
-// Importar libreria CORS
 const cors = require("cors");
-// Importar gestores de rutas
 const registrosRoutes = require("./routes/registrosRoutes");
-// const artistaRoutes = require("./routes/artistaRoutes");
-// const pedidoRoutes = require("./routes/pedidoRoutes");
-
-// Importar configuración
 const config = require("./config/config");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configurar middleware para analizar JSON en las solicitudes
+// Configuración CORS mejorada para Electron
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Permitir solicitudes sin origen (file://) y desde localhost
+      if (
+        !origin ||
+        origin.startsWith("file://") ||
+        origin.includes("localhost")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origen no permitido por CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Middlewares
 app.use(express.json());
-// Configurar CORS para admitir cualquier origen
-// app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
+// Configuración de rutas estáticas y uploads
+app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
+
+// Configuración específica por entorno
 if (process.env.NODE_ENV !== "production") {
-  // Configurar CORS para admitir el origen del frontend en desarrollo
-  app.use(
-    cors({
-      origin: ["http://localhost:5173", "app://electron"],
-      credentials: true, // Permitir envío de cookies
-    })
-  );
-}
-
-// Configurar rutas de la API Rest
-app.use("/api/registros", registrosRoutes);
-// app.use("/api/artistas", artistaRoutes);
-
-if (process.env.NODE_ENV !== "production") {
-  console.log("Sirviendo ficheros de desarrollo");
-  // Configurar el middleware para servir archivos estáticos desde el directorio public/dev en desarrollo
-  app.use(express.static(path.join(__dirname, "public/dev")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/dev", "index.html"));
-  });
+  console.log("Modo desarrollo activado");
+  app.use(express.static(path.resolve(__dirname, "public/dev")));
 } else {
-  console.log("Sirviendo ficheros de producción");
-  // Configurar el middleware para servir archivos estáticos desde el directorio public/dev en producción
-  app.use(express.static(path.join(__dirname, "public/prod")));
+  console.log("Modo producción activado");
+  app.use(express.static(path.resolve(__dirname, "public/prod")));
+}
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/prod", "index.html"));
+// Rutas API
+app.use("/api/registros", registrosRoutes);
+
+// Manejo de rutas del frontend (React Router)
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.resolve(
+      __dirname,
+      process.env.NODE_ENV !== "production"
+        ? "public/dev/index.html"
+        : "public/prod/index.html"
+    )
+  );
+});
+
+// Iniciar servidor con manejo para Electron
+if (true || process.env.NODE_ENV !== "test") {
+  // const server = app.listen(config.port, () => {
+  //   console.log(`Servidor escuchando en el puerto ${config.port}`);
+
+  //   // Notificar a Electron si es necesario
+  //   if (process.send) {
+  //     process.send('server-ready');
+  //   }
+  // });
+
+  const server = app.listen(port, "127.0.0.1", () => {
+    console.log(`Servidor escuchando en http://127.0.0.1:${port}`);
+
+    //   // Notificar a Electron si es necesario
+    if (process.send) {
+      process.send("server-ready");
+    }
+  });
+
+  // Manejo de errores del servidor
+  server.on("error", (error) => {
+    console.error("Error del servidor:", error);
   });
 }
 
-// // Configurar el middleware para servir archivos estáticos desde el directorio 'public\old_js_vainilla'
-// app.use(express.static(path.join(__dirname, "public","old_js_vainilla")));
-
-// Ruta para manejar las solicitudes al archivo index.html
-// app.get('/', (req, res) => {
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "public", "old_js_vainilla","index.html"));
-// });
-
-// Iniciar el servidor solo si no estamos en modo de prueba
-if (process.env.NODE_ENV !== "test") {
-  app.listen(config.port, () => {
-    console.log(`Servidor escuchando en el puerto ${config.port}`);
-  });
-}
-// Exportamos la aplicación para poder hacer pruebas
 module.exports = app;
