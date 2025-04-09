@@ -27,10 +27,25 @@ function createWindow() {
     console.log(`El backend se cerró con código: ${code}, señal: ${signal}`);
   });
 
+  // Detectar la ruta correcta del icono
+  const iconPath =
+    process.env.NODE_ENV === "development"
+      ? path.join(__dirname, "../resources/custom-icon.ico") // Ruta en desarrollo
+      : path.join(process.resourcesPath, "app", "resources", "custom-icon.ico"); // Ruta en producción
+
+  console.log("Usando icono desde:", iconPath);
+
+  // Verificar si el archivo existe (para depuración)
+  const fs = require("fs");
+  if (!fs.existsSync(iconPath)) {
+    console.error("El archivo de icono no existe en la ruta:", iconPath);
+  }
+
   // Crear la ventana de Electron
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: iconPath, // Añadir el icono aquí
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

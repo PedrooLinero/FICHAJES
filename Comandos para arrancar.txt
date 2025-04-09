@@ -1,0 +1,11 @@
+*** COMANDOS PARA ARRANCAR LA APLICACION ***
+- npm install (node_modules)	
+- npm run build
+- npx electron-builder --win (empaquetar la aplicación)
+
+* Nos dirigimos a la ruta: ...aplicacion/resources/app/backend y añadimos lo siguiente:
+
+- crear la carpeta uploads
+- irnos al cmd en esa ruta y añadir: npm instal multer
+
+Una vez esto, ya podemos ejecutar la aplicación

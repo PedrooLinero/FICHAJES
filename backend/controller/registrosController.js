@@ -218,27 +218,95 @@ class registrosController {
       // Convertir el array de objetos a una hoja de cálculo
       const worksheet = XLSX.utils.json_to_sheet(resultado);
 
-      // Aplicar formato condicional a toda la fila
+      // // Aplicar formato condicional a toda la fila
+      // const range = XLSX.utils.decode_range(worksheet["!ref"]);
+      // for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+      //   const cellAddress = XLSX.utils.encode_cell({ r: R, c: 15 }); // Columna 15 = "% Presencia vs Contr.-Aus."
+      //   const cell = worksheet[cellAddress];
+      //   if (cell && cell.v) {
+      //     // Extraer el número del porcentaje (eliminando el %)
+      //     const valorStr = cell.v.toString();
+      //     const valor = parseFloat(valorStr.replace("%", "").trim());
+      //     if (!isNaN(valor) && (valor > 102 || valor < 98)) {
+      //       // Colorear toda la fila
+      //       for (let C = range.s.c; C <= range.e.c; ++C) {
+      //         const cellToColor = XLSX.utils.encode_cell({ r: R, c: C });
+      //         if (worksheet[cellToColor]) {
+      //           worksheet[cellToColor].s = {
+      //             fill: {
+      //               patternType: "solid",
+      //               fgColor: { rgb: "fffa90" }, // Color rojo
+      //             },
+      //           };
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+
+      // Dentro de la función guardarFicheros, reemplaza el bloque de formato condicional con este:
+
+      // Función auxiliar para colorear una fila
+      function colorearFila(worksheet, row, startCol, endCol, color) {
+        for (let C = startCol; C <= endCol; ++C) {
+          const cellToColor = XLSX.utils.encode_cell({ r: row, c: C });
+          if (worksheet[cellToColor]) {
+            worksheet[cellToColor].s = {
+              fill: {
+                patternType: "solid",
+                fgColor: { rgb: color },
+              },
+            };
+          }
+        }
+      }
+
+      // Función para convertir horas:minutos a número decimal
+      function horasToDecimal(horasStr) {
+        if (!horasStr || typeof horasStr !== "string") return 0;
+        const [horas, minutos] = horasStr.split(":").map(Number);
+        return horas + minutos / 60;
+      }
+
+      // Aplicar formato condicional
       const range = XLSX.utils.decode_range(worksheet["!ref"]);
       for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 15 }); // Columna 15 = "% Presencia vs Contr.-Aus."
-        const cell = worksheet[cellAddress];
-        if (cell && cell.v) {
-          // Extraer el número del porcentaje (eliminando el %)
-          const valorStr = cell.v.toString();
-          const valor = parseFloat(valorStr.replace("%", "").trim());
-          if (!isNaN(valor) && (valor > 102 || valor < 98)) {
-            // Colorear toda la fila
-            for (let C = range.s.c; C <= range.e.c; ++C) {
-              const cellToColor = XLSX.utils.encode_cell({ r: R, c: C });
-              if (worksheet[cellToColor]) {
-                worksheet[cellToColor].s = {
-                  fill: {
-                    patternType: "solid",
-                    fgColor: { rgb: "fffa90" }, // Color rojo
-                  },
-                };
-              }
+        // Verificamos únicamente la columna "Absentismo" para prioridad
+        const cellAbsentismo =
+          worksheet[XLSX.utils.encode_cell({ r: R, c: 6 })]; // Columna G (índice 6) = "Absentismo"
+
+        let aplicarColorAzul = false;
+
+        if (cellAbsentismo && cellAbsentismo.v) {
+          const valorAbsentismo = horasToDecimal(cellAbsentismo.v);
+
+          // Si Absentismo es mayor que 0, coloreamos la fila de azul
+          if (valorAbsentismo > 0) {
+            aplicarColorAzul = true;
+            colorearFila(worksheet, R, range.s.c, range.e.c, "87CEEB"); // Azul claro
+          }
+        }
+
+        // Si no se aplica el color azul, aplicamos las otras reglas de formato
+        if (!aplicarColorAzul) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: 15 }); // Columna P (índice 15) = "% Presencia vs Contr.-Aus."
+          const cell = worksheet[cellAddress];
+          if (cell && cell.v) {
+            const valorStr = cell.v.toString();
+            const valor = parseFloat(valorStr.replace("%", "").trim());
+
+            if (isNaN(valor)) {
+              continue; // Saltar si no se puede parsear
+            }
+
+            if (valor < 0) {
+              colorearFila(worksheet, R, range.s.c, range.e.c, "808080"); // Gris para negativos
+            } else if (valor === 0) {
+              colorearFila(worksheet, R, range.s.c, range.e.c, "f57878"); // Rojo para 0%
+            } else if (valor >= 1 && valor <= 90) {
+              colorearFila(worksheet, R, range.s.c, range.e.c, "f7f488"); // Amarillo para 1%-90%
+            } else if (valor > 150) {
+              colorearFila(worksheet, R, range.s.c, range.e.c, "f57878"); // Rojo para >150%
             }
           }
         }

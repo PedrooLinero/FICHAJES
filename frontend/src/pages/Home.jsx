@@ -1,6 +1,5 @@
 import { Outlet } from "react-router";
 import Menu from "../components/Menu";
-import Footer from "../components/Footer";
 import CargarArchivos from "../components/CargarArchivos";
 
 function Home() {
@@ -9,7 +8,6 @@ function Home() {
       <Menu />
       <CargarArchivos />
       <Outlet />
-      <Footer />
     </>
   );
 }
