@@ -174,6 +174,7 @@ class registrosController {
             "Trabajo Efectivo": decimalAHorasMinutos(
               filaExcel1["Trabajo Efectivo"]
             ),
+            Total: decimalAHorasMinutos(filaExcel1["Presencia Fichaje"] - filaExcel1["Contratos Laborales"])
           });
         } else {
           resultado.push({
@@ -208,6 +209,7 @@ class registrosController {
             "Trabajo Efectivo": decimalAHorasMinutos(
               filaExcel1["Trabajo Efectivo"]
             ),
+            Total: decimalAHorasMinutos(filaExcel1["Presencia Fichaje"] - filaExcel1["Contratos Laborales"])
           });
         }
       }
@@ -217,32 +219,6 @@ class registrosController {
 
       // Convertir el array de objetos a una hoja de cálculo
       const worksheet = XLSX.utils.json_to_sheet(resultado);
-
-      // // Aplicar formato condicional a toda la fila
-      // const range = XLSX.utils.decode_range(worksheet["!ref"]);
-      // for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-      //   const cellAddress = XLSX.utils.encode_cell({ r: R, c: 15 }); // Columna 15 = "% Presencia vs Contr.-Aus."
-      //   const cell = worksheet[cellAddress];
-      //   if (cell && cell.v) {
-      //     // Extraer el número del porcentaje (eliminando el %)
-      //     const valorStr = cell.v.toString();
-      //     const valor = parseFloat(valorStr.replace("%", "").trim());
-      //     if (!isNaN(valor) && (valor > 102 || valor < 98)) {
-      //       // Colorear toda la fila
-      //       for (let C = range.s.c; C <= range.e.c; ++C) {
-      //         const cellToColor = XLSX.utils.encode_cell({ r: R, c: C });
-      //         if (worksheet[cellToColor]) {
-      //           worksheet[cellToColor].s = {
-      //             fill: {
-      //               patternType: "solid",
-      //               fgColor: { rgb: "fffa90" }, // Color rojo
-      //             },
-      //           };
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
 
       // Dentro de la función guardarFicheros, reemplaza el bloque de formato condicional con este:
 
